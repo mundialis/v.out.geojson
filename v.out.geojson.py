@@ -65,6 +65,8 @@ GISDBASE = None
 
 
 def cleanup():
+    """
+    Cleanup temporary files and directories."""
     grass.message(_("Cleaning up..."))
     # nuldev = open(os.devnull, 'w')
     for rm_f in rm_file:
@@ -79,7 +81,10 @@ def cleanup():
         grass.try_remove(SRCGISRC)
 
 
-def createTMPlocation(epsg=4326):
+def create_tmp_location(epsg=4326):
+    """
+    Create temporary location with given EPSG code.
+    """
     global TMPLOC, SRCGISRC
     SRCGISRC = grass.tempfile()
     TMPLOC = "temp_import_location_" + str(os.getpid())
@@ -97,7 +102,9 @@ def createTMPlocation(epsg=4326):
         epsg_arg = {"srid": "EPSG:{}".format(epsg)}
     # create temp location from input without import
     grass.verbose(_("Creating temporary location with EPSG:%d...") % epsg)
-    grass.run_command("g.proj", flags="c", location=TMPLOC, quiet=True, **epsg_arg)
+    grass.run_command(
+        "g.proj", flags="c", location=TMPLOC, quiet=True, **epsg_arg
+    )
 
     # switch to temp location
     os.environ["GISRC"] = str(SRCGISRC)
@@ -111,6 +118,9 @@ def createTMPlocation(epsg=4326):
 
 
 def get_actual_location():
+    """
+    Get actual location and mapset.
+    """
     global TGTGISRC, GISDBASE
     # get actual location, mapset, ...
     grassenv = grass.gisenv()
@@ -122,6 +132,9 @@ def get_actual_location():
 
 
 def main():
+    """
+    Export a GRASS vector as GeoJSON.
+    """
 
     global rm_file
     global TMPLOC, SRCGISRC, TGTGISRC, GISDBASE
@@ -142,7 +155,7 @@ def main():
     # get actual location, mapset, ...
     tgtloc, tgtmapset = get_actual_location()
     # create temporary location with epsg:4326
-    createTMPlocation(int(options["epsg"]))
+    create_tmp_location(int(options["epsg"]))
 
     if "@" in vect:
         [name, vectmapset] = vect.split("@")
@@ -164,12 +177,15 @@ def main():
         rm_file.append(geojsonfile)
     else:
         geojsonfile = options["output"]
-    grass.run_command("v.out.ogr", input=name, output=geojsonfile, format="GeoJSON")
+    grass.run_command(
+        "v.out.ogr", input=name, output=geojsonfile, format="GeoJSON"
+    )
     if options["output"] == "-":
         with open(geojsonfile) as f:
             gj = geojson.load(f)
         grass.message(
-            _("GeoJSON of <%s> in EPSG:<%s> is:") % (options["input"], options["epsg"])
+            _("GeoJSON of <%s> in EPSG:<%s> is:")
+            % (options["input"], options["epsg"])
         )
         print(gj)
     else:

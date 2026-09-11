@@ -91,7 +91,9 @@ class TestVOutGeojson(TestCase):
             stderr,
         )
         # check to see if output file exists
-        self.assertFileExists(self.geojson_file, msg="Output file does not exist")
+        self.assertFileExists(
+            self.geojson_file, msg="Output file does not exist"
+        )
         # check if the output file is equal to the reference file
         self.assertFilesEqualMd5(
             self.geojson_file,
@@ -104,7 +106,10 @@ class TestVOutGeojson(TestCase):
         epsg = 4326
         geojson = self.geojson_epsg4326
         v_out_geojson = SimpleModule(
-            "v.out.geojson", input=self.area, output=self.geojson_file, epsg=epsg
+            "v.out.geojson",
+            input=self.area,
+            output=self.geojson_file,
+            epsg=epsg,
         )
         self.assertModule(v_out_geojson)
         # test that error output is not empty
@@ -117,10 +122,14 @@ class TestVOutGeojson(TestCase):
             stderr,
         )
         # check to see if output file exists
-        self.assertFileExists(self.geojson_file, msg="Output file does not exist")
+        self.assertFileExists(
+            self.geojson_file, msg="Output file does not exist"
+        )
         # check if the output file is equal to the reference file
         self.assertFilesEqualMd5(
-            self.geojson_file, geojson, msg="Output file is not equal to reference file"
+            self.geojson_file,
+            geojson,
+            msg="Output file is not equal to reference file",
         )
 
     def test_export_to_geojson_epsg3358(self):
@@ -128,7 +137,10 @@ class TestVOutGeojson(TestCase):
         epsg = 3358
         geojson = self.geojson_epsg3358
         v_out_geojson = SimpleModule(
-            "v.out.geojson", input=self.area, output=self.geojson_file, epsg=epsg
+            "v.out.geojson",
+            input=self.area,
+            output=self.geojson_file,
+            epsg=epsg,
         )
         self.assertModule(v_out_geojson)
         # test that error output is not empty
@@ -141,22 +153,30 @@ class TestVOutGeojson(TestCase):
             stderr,
         )
         # check to see if output file exists
-        self.assertFileExists(self.geojson_file, msg="Output file does not exist")
+        self.assertFileExists(
+            self.geojson_file, msg="Output file does not exist"
+        )
         # check if the output file is equal to the reference file
         self.assertFilesEqualMd5(
-            self.geojson_file, geojson, msg="Output file is not equal to reference file"
+            self.geojson_file,
+            geojson,
+            msg="Output file is not equal to reference file",
         )
 
     def test_export_to_geojson_stdout(self):
         """Test export in geojson format to stdout"""
         epsg = 4326
-        v_out_geojson = SimpleModule("v.out.geojson", input=self.area, output="-")
+        v_out_geojson = SimpleModule(
+            "v.out.geojson", input=self.area, output="-"
+        )
         self.assertModule(v_out_geojson)
         # test that error output is not empty
         stderr = v_out_geojson.outputs.stderr
         self.assertTrue(stderr)
         # test that the right map is mentioned in the error message
-        self.assertIn("GeoJSON of <%s> in EPSG:<%d> is:" % (self.area, epsg), stderr)
+        self.assertIn(
+            "GeoJSON of <%s> in EPSG:<%d> is:" % (self.area, epsg), stderr
+        )
         # check geojson in stdout
         stdout = v_out_geojson.outputs.stdout
         self.assertEqual(self.geojson_stdout, stdout)
